@@ -36,6 +36,12 @@
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
                                                 </imageView>
+                                                <view alpha="0.20000000000000001" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lfz-Px-mCN">
+                                                    <rect key="frame" x="16" y="303" width="370" height="30"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="zSE-fK-OaJ"/>
+                                                    </constraints>
+                                                </view>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="23 августа 2022" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ihj-dg-0Qe">
                                                     <rect key="frame" x="23.999999999999993" y="309" width="102.33333333333331" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
@@ -55,8 +61,11 @@
                                             <color key="backgroundColor" red="0.1019607843" green="0.1058823529" blue="0.1333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstItem="UwF-iV-ze5" firstAttribute="top" secondItem="VDG-kA-HjD" secondAttribute="top" id="0Rn-8N-fFH"/>
+                                                <constraint firstAttribute="trailing" secondItem="lfz-Px-mCN" secondAttribute="trailing" constant="16" id="8iu-uo-G6J"/>
                                                 <constraint firstItem="VDG-kA-HjD" firstAttribute="trailing" secondItem="UwF-iV-ze5" secondAttribute="trailing" id="D79-cz-05l"/>
+                                                <constraint firstItem="lfz-Px-mCN" firstAttribute="bottom" secondItem="NyM-CI-YCW" secondAttribute="bottom" constant="-4" id="KFv-1R-La1"/>
                                                 <constraint firstAttribute="trailing" secondItem="VDG-kA-HjD" secondAttribute="trailing" constant="16" id="KaE-FT-1lB"/>
+                                                <constraint firstItem="lfz-Px-mCN" firstAttribute="leading" secondItem="NyM-CI-YCW" secondAttribute="leading" constant="16" id="NHU-Vk-6ng"/>
                                                 <constraint firstItem="Ihj-dg-0Qe" firstAttribute="leading" secondItem="VDG-kA-HjD" secondAttribute="leading" constant="8" id="X4f-EN-qtR"/>
                                                 <constraint firstItem="VDG-kA-HjD" firstAttribute="bottom" secondItem="Ihj-dg-0Qe" secondAttribute="bottom" constant="8" id="XLc-k0-UfO"/>
                                                 <constraint firstItem="VDG-kA-HjD" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Ihj-dg-0Qe" secondAttribute="trailing" constant="8" id="nX1-6n-inu"/>
@@ -66,6 +75,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="bottomGradientView" destination="lfz-Px-mCN" id="Og5-7v-VcY"/>
                                             <outlet property="dateLabel" destination="Ihj-dg-0Qe" id="crW-b5-YcU"/>
                                             <outlet property="imageCell" destination="VDG-kA-HjD" id="cY4-vv-tWw"/>
                                             <outlet property="likeButton" destination="UwF-iV-ze5" id="U4t-2N-b7g"/>
@@ -93,7 +103,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="46.564885496183201" y="-2.1126760563380285"/>
+            <point key="canvasLocation" x="46.268656716417908" y="-2.7459954233409607"/>
         </scene>
     </scenes>
     <resources>
