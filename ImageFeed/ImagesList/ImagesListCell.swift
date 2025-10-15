@@ -10,7 +10,13 @@ final class ImagesListCell: UITableViewCell{
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var likeButton: UIButton!
     
-    func makeGradient(){
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        makeGradient()
+        bottomGradientView.updateGradient()
+    }
+    
+    private func makeGradient(){
         if self.hasGradient == false{
             self.hasGradient = true
             let gradientLayer = CAGradientLayer()
@@ -22,7 +28,14 @@ final class ImagesListCell: UITableViewCell{
             gradientLayer.startPoint = CGPoint(x: 0, y: 1.0)
             gradientLayer.endPoint = CGPoint(x: 0, y: 0)
             
-            self.bottomGradientView.layer.insertSublayer(gradientLayer, at: 0)
+            self.bottomGradientView.layer.addSublayer(gradientLayer)
         }
+    }
+}
+
+extension UIView{
+    func updateGradient() {
+            guard let gradientLayer = layer.sublayers?.first(where: { $0 is CAGradientLayer }) as? CAGradientLayer else { return }
+            gradientLayer.frame = bounds
         }
 }
