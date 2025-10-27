@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		114B12612E9015F400D22BE5 /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1173F5992E9D6A97000D8AFF /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -46,16 +46,8 @@
 			isa = PBXGroup;
 			children = (
 				114B12632E9015F400D22BE5 /* ImageFeed */,
-				114B12622E9015F400D22BE5 /* Products */,
+				1173F5992E9D6A97000D8AFF /* ImageFeed.app */,
 			);
-			sourceTree = "<group>";
-		};
-		114B12622E9015F400D22BE5 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				114B12612E9015F400D22BE5 /* ImageFeed.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -80,7 +72,7 @@
 			packageProductDependencies = (
 			);
 			productName = ImageFeed;
-			productReference = 114B12612E9015F400D22BE5 /* ImageFeed.app */;
+			productReference = 1173F5992E9D6A97000D8AFF /* ImageFeed.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -108,7 +100,7 @@
 			mainGroup = 114B12582E9015F400D22BE5;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 114B12622E9015F400D22BE5 /* Products */;
+			productRefGroup = 114B12582E9015F400D22BE5;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
