@@ -41,7 +41,7 @@ final class ProfileViewController: UIViewController {
     
     private func configureNameLabel(){
         nameLabel = UILabel()
-        nameLabel.text = "Екатерина Новикова"
+        nameLabel.text = ProfileViewContsatnts.nameLabelText
         nameLabel.font = UIFont.boldSystemFont(ofSize: 23)
         nameLabel.textColor = .white
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -55,7 +55,7 @@ final class ProfileViewController: UIViewController {
     
     private func configureLoginLable(){
         loginLabel = UILabel()
-        loginLabel.text = "@ekaterina_nov"
+        loginLabel.text = ProfileViewContsatnts.loginLabelText
         loginLabel.font = UIFont.systemFont(ofSize: 13)
         loginLabel.textColor = .ypGrey
         loginLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -69,7 +69,7 @@ final class ProfileViewController: UIViewController {
     
     private func configureDescriptionLabel(){
         descriptionLabel = UILabel()
-        descriptionLabel.text = "Hello, world!"
+        descriptionLabel.text = ProfileViewContsatnts.discriptionLabelText
         descriptionLabel.font = UIFont.systemFont(ofSize: 13)
         descriptionLabel.textColor = .white
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -93,9 +93,9 @@ final class ProfileViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             logoutButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-            logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            logoutButton.widthAnchor.constraint(equalToConstant: 44),
-            logoutButton.heightAnchor.constraint(equalToConstant: 44)
+            logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: ProfileViewContsatnts.logoutButtonTrailingConstraints),
+            logoutButton.widthAnchor.constraint(equalToConstant: ProfileViewContsatnts.logoutButtonWHconstraints),
+            logoutButton.heightAnchor.constraint(equalToConstant: ProfileViewContsatnts.logoutButtonWHconstraints)
             ])
     }
     
