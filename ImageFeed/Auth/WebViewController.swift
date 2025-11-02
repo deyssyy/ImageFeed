@@ -3,6 +3,7 @@ import WebKit
 
 enum WebViewConstants{
     static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
+    static let unsplashUrlComponentPath = "/oauth/authorize/native"
 }
 
 final class WebViewViewController: UIViewController {
@@ -74,7 +75,7 @@ final class WebViewViewController: UIViewController {
         if
             let url = navigationAction.request.url,
             let urlComponents = URLComponents(string: url.absoluteString),
-            urlComponents.path == "/oauth/authorize/native",
+            urlComponents.path == WebViewConstants.unsplashUrlComponentPath,
             let items = urlComponents.queryItems,
             let codeItem = items.first(where: { $0.name == "code" })
         {

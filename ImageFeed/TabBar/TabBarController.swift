@@ -1,6 +1,6 @@
 import UIKit
 
-class MyTabBarController: UITabBarController{
+final class MyTabBarController: UITabBarController{
     override func awakeFromNib() {
         super.awakeFromNib()
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
@@ -9,14 +9,14 @@ class MyTabBarController: UITabBarController{
         
         imageListViewController.tabBarItem = UITabBarItem(
             title: "",
-            image: UIImage(named: "TabEditoralActive"),
+            image: UIImage(resource: .tabEditoralActive),
             selectedImage: nil)
         
         let profileViewController = storyboard.instantiateViewController(withIdentifier: "profileViewIdentifier")
         
         profileViewController.tabBarItem = UITabBarItem(
             title: "",
-            image: UIImage(named: "TabProfileActive"),
+            image: UIImage(resource: .tabProfileActive),
             selectedImage: nil)
         
         let appearance = UITabBarAppearance()
