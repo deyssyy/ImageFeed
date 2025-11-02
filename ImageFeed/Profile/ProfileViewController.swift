@@ -2,14 +2,22 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
+    enum ProfileViewConsatnts{
+        static let logoutButtonWHconstraints: CGFloat = 44
+        static let logoutButtonTrailingConstraints: CGFloat = -16
+        static let nameLabelText = "Екатерина Новикова"
+        static let loginLabelText = "@ekaterina_nov"
+        static let discriptionLabelText = "Hello, world!"
+    }
+    
     private var profileImageView: UIImageView!
     private var nameLabel: UILabel!
     private var loginLabel: UILabel!
     private var descriptionLabel: UILabel!
     private var logoutButton: UIButton!
     
-    private let profileImage = UIImage(named: "TestProfilePhoto")
-    private let logoutButtonImage = UIImage(named: "LogOutButton")
+    private let profileImage = UIImage(resource: .testProfilePhoto)
+    private let logoutButtonImage = UIImage(resource: .logOutButton)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +49,7 @@ final class ProfileViewController: UIViewController {
     
     private func configureNameLabel(){
         nameLabel = UILabel()
-        nameLabel.text = "Екатерина Новикова"
+        nameLabel.text = ProfileViewConsatnts.nameLabelText
         nameLabel.font = UIFont.boldSystemFont(ofSize: 23)
         nameLabel.textColor = .white
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -55,7 +63,7 @@ final class ProfileViewController: UIViewController {
     
     private func configureLoginLable(){
         loginLabel = UILabel()
-        loginLabel.text = "@ekaterina_nov"
+        loginLabel.text = ProfileViewConsatnts.loginLabelText
         loginLabel.font = UIFont.systemFont(ofSize: 13)
         loginLabel.textColor = .ypGrey
         loginLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -69,7 +77,7 @@ final class ProfileViewController: UIViewController {
     
     private func configureDescriptionLabel(){
         descriptionLabel = UILabel()
-        descriptionLabel.text = "Hello, world!"
+        descriptionLabel.text = ProfileViewConsatnts.discriptionLabelText
         descriptionLabel.font = UIFont.systemFont(ofSize: 13)
         descriptionLabel.textColor = .white
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -83,7 +91,7 @@ final class ProfileViewController: UIViewController {
     
     private func configureLogoutButton(){
         logoutButton = UIButton.systemButton(
-            with: logoutButtonImage!,
+            with: logoutButtonImage,
             target: self,
             action: #selector(Self.loguotButtonTapped)
         )
@@ -93,9 +101,9 @@ final class ProfileViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             logoutButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-            logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            logoutButton.widthAnchor.constraint(equalToConstant: 44),
-            logoutButton.heightAnchor.constraint(equalToConstant: 44)
+            logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: ProfileViewConsatnts.logoutButtonTrailingConstraints),
+            logoutButton.widthAnchor.constraint(equalToConstant: ProfileViewConsatnts.logoutButtonWHconstraints),
+            logoutButton.heightAnchor.constraint(equalToConstant: ProfileViewConsatnts.logoutButtonWHconstraints)
             ])
     }
     
