@@ -10,24 +10,6 @@ final class OAuth2Service{
     private var lastCode: String?
     private init(){}
     
-    private func MakeOAuthTokenRequest(code: String) -> URLRequest?{
-        guard var urlComponents = URLComponents(string: Constants.defaultUrlForComponents) else { return nil }
-        
-        urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "client_secret", value: Constants.secretKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
-            URLQueryItem(name: "code", value: code),
-            URLQueryItem(name: "grant_type", value: "authorization_code")
-        ]
-        
-        guard let authTokenURL = urlComponents.url else { return nil }
-        
-        var request = URLRequest(url: authTokenURL)
-        request.httpMethod = "POST"
-        return request
-    }
-    
     func fetchOAuthToken(code: String, handler: @escaping (Result<String, Error>) -> Void){
         assert(Thread.isMainThread)
         guard lastCode != code else {
@@ -38,7 +20,7 @@ final class OAuth2Service{
         task?.cancel()
         lastCode = code
         
-        guard let request = self.MakeOAuthTokenRequest(code: code) else {
+        guard let request = self.makeOAuthTokenRequest(code: code) else {
             handler(.failure(NetworkError.invalidRequest))
             print("[MakeOAuthTokenRequest] : Невозможно создать URLRequest")
             return
@@ -60,6 +42,24 @@ final class OAuth2Service{
         
         self.task = task
         task.resume()
+    }
+    
+    private func makeOAuthTokenRequest(code: String) -> URLRequest?{
+        guard var urlComponents = URLComponents(string: Constants.defaultUrlForComponents) else { return nil }
+        
+        urlComponents.queryItems = [
+            URLQueryItem(name: "client_id", value: Constants.accessKey),
+            URLQueryItem(name: "client_secret", value: Constants.secretKey),
+            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
+            URLQueryItem(name: "code", value: code),
+            URLQueryItem(name: "grant_type", value: "authorization_code")
+        ]
+        
+        guard let authTokenURL = urlComponents.url else { return nil }
+        
+        var request = URLRequest(url: authTokenURL)
+        request.httpMethod = HTTPMethod.post.rawValue
+        return request
     }
 }
 

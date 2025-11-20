@@ -11,8 +11,8 @@ final class WebViewViewController: UIViewController {
     weak var delegate: WebViewViewControllerDelegate?
     private var estimatedProgressObservation: NSKeyValueObservation?
     
-    private var webView: WKWebView!
-    private var progressView: UIProgressView!
+    private let webView = WKWebView()
+    private let progressView = UIProgressView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +30,6 @@ final class WebViewViewController: UIViewController {
     }
     
     private func setupWebView(){
-        webView = WKWebView()
         webView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(webView)
         
@@ -41,7 +40,6 @@ final class WebViewViewController: UIViewController {
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0)
         ])
         
-        progressView = UIProgressView()
         progressView.progressTintColor = .ypBlack
         progressView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(progressView)

@@ -1,7 +1,7 @@
 import UIKit
 
 final class ImagesListViewController: UIViewController {
-    private var tableView: UITableView!
+    private let tableView = UITableView()
     
     private enum ButtonIcons: String{
         case LikeButtonOn
@@ -25,7 +25,6 @@ final class ImagesListViewController: UIViewController {
     }
     
     private func setupTableView(){
-        tableView = UITableView()
         tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reusedIdentifier)
         tableView.backgroundColor = .ypBlack
         tableView.separatorStyle = .none

@@ -5,10 +5,10 @@ final class ImagesListCell: UITableViewCell{
     
     private let gradientLayer = CAGradientLayer()
     
-    var bottomGradientView: UIView!
-    var imageCell: UIImageView!
-    var dateLabel: UILabel!
-    var likeButton: UIButton!
+    let bottomGradientView = UIView()
+    let imageCell = UIImageView()
+    let dateLabel = UILabel()
+    let likeButton = UIButton(type: .custom)
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -22,14 +22,10 @@ final class ImagesListCell: UITableViewCell{
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     private func setupCell(){
-        bottomGradientView = UIView()
-        imageCell = UIImageView()
-        dateLabel = UILabel()
-        likeButton = UIButton(type: .custom)
         self.backgroundColor = .clear
         contentView.backgroundColor = .ypBlack
         

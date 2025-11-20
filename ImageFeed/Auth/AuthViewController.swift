@@ -6,20 +6,20 @@ final class AuthViewController: UIViewController{
     private let oAuth2TokenStorage = OAuth2TokenStorage.shared
     weak var delegate: AuthViewControllerDelegate?
     
-    private var loginButton: UIButton!
-    private var logoImageView: UIImageView!
+    private let loginButton = UIButton(type: .system)
+    private let logoImageView = UIImageView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBackButton()
-        setupAuthview()
+        setupAuthView()
     }
     
-    private func setupAuthview(){
+    private func setupAuthView(){
         view.backgroundColor = .ypBlack
         
         let logoImage = UIImage(resource: .logoOfUnsplash)
-        logoImageView = UIImageView(image: logoImage)
+        logoImageView.image = logoImage
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logoImageView)
         
@@ -28,7 +28,6 @@ final class AuthViewController: UIViewController{
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
         
-        loginButton = UIButton(type: .system)
         loginButton.setTitle("Войти", for: .normal)
         loginButton.backgroundColor = .white
         loginButton.setTitleColor(.ypBlack, for: .normal)

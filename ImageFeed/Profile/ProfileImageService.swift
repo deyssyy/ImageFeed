@@ -4,12 +4,6 @@ struct ProfileImage: Codable{
     let small: String
     let medium: String
     let large: String
-    
-    private enum CodingKeys: String, CodingKey {
-        case small
-        case medium
-        case large
-    }
 }
 
 struct UserResult: Codable{
@@ -23,7 +17,7 @@ struct UserResult: Codable{
 final class ProfileImageService{
     static let shared = ProfileImageService()
     private init(){}
-    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
+    static let didChangeNotification = Notification.Name("ProfileImageProviderDidChange")
     private let storage = OAuth2TokenStorage.shared
     private var task: URLSessionTask?
     private(set) var avatarImageUrl: String?
@@ -31,7 +25,7 @@ final class ProfileImageService{
     private func MakeProfilePhotoRequest(username: String, token: String) -> URLRequest?{
         guard let url = URL(string: (Constants.defaultBaseURL.absoluteString + "/users/\(username)")) else { return nil }
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = HTTPMethod.get.rawValue
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
     }

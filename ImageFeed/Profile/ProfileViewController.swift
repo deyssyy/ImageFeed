@@ -11,12 +11,12 @@ final class ProfileViewController: UIViewController {
         static var discriptionLabelText = "Hello, world!"
     }
     
-    private var profileImageView: UIImageView!
-    private var nameLabel: UILabel!
-    private var loginLabel: UILabel!
-    private var descriptionLabel: UILabel!
-    private var logoutButton: UIButton!
-    
+    private let profileImageView = UIImageView()
+    private let nameLabel = UILabel()
+    private let loginLabel = UILabel()
+    private let descriptionLabel = UILabel()
+    private let logoutButton = UIButton(type: .custom)
+
     private var profileImageServiceObserver: NSObjectProtocol?
     private let profileService = ProfileService.shared
     private let profileImage = UIImage(resource: .testProfilePhoto)
@@ -43,7 +43,7 @@ final class ProfileViewController: UIViewController {
         nameLabel.text = profile.name
         loginLabel.text = profile.username
         descriptionLabel.text = (profile.bio?.isEmpty ?? true)
-        ? "Описание профиль отсутствует"
+        ? "Описание профиля отсутствует"
         : profile.bio
     }
     
@@ -86,7 +86,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureProfileImageView(){
-        profileImageView = UIImageView(image: profileImage)
+        profileImageView.image = profileImage
         profileImageView.layer.cornerRadius = 35
         profileImageView.clipsToBounds = true
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -101,7 +101,6 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureNameLabel(){
-        nameLabel = UILabel()
         nameLabel.text = ProfileViewConsatnts.nameLabelText
         nameLabel.font = UIFont.boldSystemFont(ofSize: 23)
         nameLabel.textColor = .white
@@ -115,7 +114,6 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureLoginLable(){
-        loginLabel = UILabel()
         loginLabel.text = ProfileViewConsatnts.loginLabelText
         loginLabel.font = UIFont.systemFont(ofSize: 13)
         loginLabel.textColor = .ypGrey
@@ -129,7 +127,6 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureDescriptionLabel(){
-        descriptionLabel = UILabel()
         descriptionLabel.text = ProfileViewConsatnts.discriptionLabelText
         descriptionLabel.font = UIFont.systemFont(ofSize: 13)
         descriptionLabel.textColor = .white
@@ -143,11 +140,8 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureLogoutButton(){
-        logoutButton = UIButton.systemButton(
-            with: logoutButtonImage,
-            target: self,
-            action: #selector(Self.loguotButtonTapped)
-        )
+        logoutButton.setImage(logoutButtonImage, for: .normal)
+        logoutButton.addTarget(self, action: #selector (loguotButtonTapped), for: .touchUpInside)
         logoutButton.tintColor = .ypRed
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logoutButton)

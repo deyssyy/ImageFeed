@@ -10,10 +10,10 @@ final class SingleImageViewController: UIViewController{
         }
     }
 
-    private var imageView: UIImageView!
-    private var scrollView: UIScrollView!
-    private var backButton: UIButton!
-    private var shareButton: UIButton!
+    private let imageView = UIImageView()
+    private let scrollView = UIScrollView()
+    private let backButton = UIButton(type: .custom)
+    private let shareButton = UIButton(type: .custom)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,11 +26,7 @@ final class SingleImageViewController: UIViewController{
     
     private func setupScrollView(){
         view.backgroundColor = .ypBlack
-        imageView = UIImageView()
-        scrollView = UIScrollView()
-        backButton = UIButton(type: .custom)
-        shareButton = UIButton(type: .custom)
-        
+       
         imageView.contentMode = .scaleAspectFit
         
         backButton.setImage(UIImage(resource: .backwardButton), for: .normal)
