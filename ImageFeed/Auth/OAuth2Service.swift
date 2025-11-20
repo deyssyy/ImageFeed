@@ -1,7 +1,13 @@
 import UIKit
 
+enum AuthServiceError: Error{
+    case invalidRequest
+}
+
 final class OAuth2Service{
     static let shared = OAuth2Service()
+    private var task: URLSessionTask?
+    private var lastCode: String?
     private init(){}
     
     private func MakeOAuthTokenRequest(code: String) -> URLRequest?{
@@ -23,28 +29,36 @@ final class OAuth2Service{
     }
     
     func fetchOAuthToken(code: String, handler: @escaping (Result<String, Error>) -> Void){
-        guard let request = self.MakeOAuthTokenRequest(code: code) else {
-            handler(.failure(NetworkError.invalidRequest))
-            print("Could not create URLRequest")
+        assert(Thread.isMainThread)
+        guard lastCode != code else {
+            handler(.failure(AuthServiceError.invalidRequest))
             return
         }
-        let task = URLSession.shared.data(for: request) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    let responseBody = try decoder.decode(OAuthResponseBody.self, from: data)
-                    handler(.success(responseBody.accessToken))
-                } catch {
-                    handler(.failure(NetworkError.decodingError(error)))
-                    print(error.localizedDescription)
-                }
+        
+        task?.cancel()
+        lastCode = code
+        
+        guard let request = self.MakeOAuthTokenRequest(code: code) else {
+            handler(.failure(NetworkError.invalidRequest))
+            print("[MakeOAuthTokenRequest] : Невозможно создать URLRequest")
+            return
+        }
+        
+        let task = URLSession.shared.objectTask(for: request){ [weak self] (result: Result<OAuthResponseBody, Error>) in
+            defer {
+                self?.task = nil
+                self?.lastCode = nil
+            }
+            switch result{
+            case .success(let response):
+                handler(.success(response.accessToken))
             case .failure(let error):
+                print("[fetchOAuthToken], ошибка запроса \(error.localizedDescription)")
                 handler(.failure(error))
-                print(error.localizedDescription)
             }
         }
         
+        self.task = task
         task.resume()
     }
 }
