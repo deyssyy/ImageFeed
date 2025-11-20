@@ -1,10 +1,50 @@
 import UIKit
 
+enum AuthServiceError: Error{
+    case invalidRequest
+}
+
 final class OAuth2Service{
     static let shared = OAuth2Service()
+    private var task: URLSessionTask?
+    private var lastCode: String?
     private init(){}
     
-    private func MakeOAuthTokenRequest(code: String) -> URLRequest?{
+    func fetchOAuthToken(code: String, handler: @escaping (Result<String, Error>) -> Void){
+        assert(Thread.isMainThread)
+        guard lastCode != code else {
+            handler(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        
+        task?.cancel()
+        lastCode = code
+        
+        guard let request = self.makeOAuthTokenRequest(code: code) else {
+            handler(.failure(NetworkError.invalidRequest))
+            print("[MakeOAuthTokenRequest] : Невозможно создать URLRequest")
+            return
+        }
+        
+        let task = URLSession.shared.objectTask(for: request){ [weak self] (result: Result<OAuthResponseBody, Error>) in
+            defer {
+                self?.task = nil
+                self?.lastCode = nil
+            }
+            switch result{
+            case .success(let response):
+                handler(.success(response.accessToken))
+            case .failure(let error):
+                print("[fetchOAuthToken], ошибка запроса \(error.localizedDescription)")
+                handler(.failure(error))
+            }
+        }
+        
+        self.task = task
+        task.resume()
+    }
+    
+    private func makeOAuthTokenRequest(code: String) -> URLRequest?{
         guard var urlComponents = URLComponents(string: Constants.defaultUrlForComponents) else { return nil }
         
         urlComponents.queryItems = [
@@ -18,34 +58,8 @@ final class OAuth2Service{
         guard let authTokenURL = urlComponents.url else { return nil }
         
         var request = URLRequest(url: authTokenURL)
-        request.httpMethod = "POST"
+        request.httpMethod = HTTPMethod.post.rawValue
         return request
-    }
-    
-    func fetchOAuthToken(code: String, handler: @escaping (Result<String, Error>) -> Void){
-        guard let request = self.MakeOAuthTokenRequest(code: code) else {
-            handler(.failure(NetworkError.invalidRequest))
-            print("Could not create URLRequest")
-            return
-        }
-        let task = URLSession.shared.data(for: request) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    let responseBody = try decoder.decode(OAuthResponseBody.self, from: data)
-                    handler(.success(responseBody.accessToken))
-                } catch {
-                    handler(.failure(NetworkError.decodingError(error)))
-                    print(error.localizedDescription)
-                }
-            case .failure(let error):
-                handler(.failure(error))
-                print(error.localizedDescription)
-            }
-        }
-        
-        task.resume()
     }
 }
 

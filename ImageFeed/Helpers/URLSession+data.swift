@@ -35,4 +35,32 @@ extension URLSession {
         
         return task
     }
+    
+    func objectTask<T: Decodable>(
+        for request: URLRequest,
+        completion: @escaping (Result<T, Error>) -> Void
+    ) -> URLSessionTask {
+        let decoder = JSONDecoder()
+        let task = data(for: request) { (result: Result<Data, Error>) in
+            switch result{
+            case .success(let data):
+                do{
+                    let decodedData = try decoder.decode(T.self, from: data)
+                    completion(.success(decodedData))
+                }
+                catch{
+                    if let decodingError = error as? DecodingError{
+                        print("Ошибка декодирования: \(decodingError) , данные: \(String(data: data, encoding: .utf8) ?? "")")
+                    } else {
+                        print("Ошибка декодирования: \(error.localizedDescription) , данные: \(String(data: data, encoding: .utf8) ?? "")")
+                    }
+                    completion(.failure(error))
+                }
+            case .failure(let error):
+                print("Ошибка запроса \(error.localizedDescription)")
+                completion(.failure(error))
+            }
+        }
+        return task
+    }
 }
