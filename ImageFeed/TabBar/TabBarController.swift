@@ -1,18 +1,17 @@
 import UIKit
 
-final class MyTabBarController: UITabBarController{
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
+final class TabBarController: UITabBarController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        let imageListViewController = storyboard.instantiateViewController(withIdentifier: "imageListViewIdentifier")
+        let imageListViewController = ImagesListViewController()
         
         imageListViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(resource: .tabEditoralActive),
             selectedImage: nil)
         
-        let profileViewController = storyboard.instantiateViewController(withIdentifier: "profileViewIdentifier")
+        let profileViewController = ProfileViewController()
         
         profileViewController.tabBarItem = UITabBarItem(
             title: "",
@@ -29,3 +28,5 @@ final class MyTabBarController: UITabBarController{
         self.viewControllers = [imageListViewController,profileViewController]
     }
 }
+
+

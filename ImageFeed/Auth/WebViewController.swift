@@ -9,46 +9,46 @@ enum WebViewConstants{
 final class WebViewViewController: UIViewController {
     
     weak var delegate: WebViewViewControllerDelegate?
+    private var estimatedProgressObservation: NSKeyValueObservation?
     
-    @IBOutlet private weak var progressView: UIProgressView!
-    @IBOutlet private var webView: WKWebView!
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        webView.addObserver(
-            self,
-            forKeyPath: #keyPath(WKWebView.estimatedProgress),
-            options: .new,
-            context: nil)
-        updateProgress()
-    }
+    private let webView = WKWebView()
+    private let progressView = UIProgressView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupWebView()
         loadAuthView()
         webView.navigationDelegate = self
+        estimatedProgressObservation = webView.observe(
+            \.estimatedProgress,
+             options: [],
+             changeHandler:{ [weak self] _, _ in
+                 guard let self else { return }
+                 self.updateProgress()
+             })
         updateProgress()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        webView.removeObserver(
-            self,
-            forKeyPath: #keyPath(WKWebView.estimatedProgress),
-            context: nil)
-    }
-    
-    override func observeValue(
-        forKeyPath keyPath: String?,
-        of object: Any?,
-        change: [NSKeyValueChangeKey : Any]?,
-        context: UnsafeMutableRawPointer?)
-    {
-        if keyPath == #keyPath(WKWebView.estimatedProgress){
-            updateProgress()
-        } else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-        }
+    private func setupWebView(){
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(webView)
+        
+        NSLayoutConstraint.activate([
+            webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0)
+        ])
+        
+        progressView.progressTintColor = .ypBlack
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(progressView)
+        
+        NSLayoutConstraint.activate([
+            progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            progressView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            progressView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0)
+        ])
     }
     
     private func updateProgress(){

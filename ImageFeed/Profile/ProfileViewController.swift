@@ -1,27 +1,80 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
     enum ProfileViewConsatnts{
         static let logoutButtonWHconstraints: CGFloat = 44
         static let logoutButtonTrailingConstraints: CGFloat = -16
-        static let nameLabelText = "Екатерина Новикова"
-        static let loginLabelText = "@ekaterina_nov"
-        static let discriptionLabelText = "Hello, world!"
+        static var nameLabelText = "Екатерина Новикова"
+        static var loginLabelText = "@ekaterina_nov"
+        static var discriptionLabelText = "Hello, world!"
     }
     
-    private var profileImageView: UIImageView!
-    private var nameLabel: UILabel!
-    private var loginLabel: UILabel!
-    private var descriptionLabel: UILabel!
-    private var logoutButton: UIButton!
-    
+    private let profileImageView = UIImageView()
+    private let nameLabel = UILabel()
+    private let loginLabel = UILabel()
+    private let descriptionLabel = UILabel()
+    private let logoutButton = UIButton(type: .custom)
+
+    private var profileImageServiceObserver: NSObjectProtocol?
+    private let profileService = ProfileService.shared
     private let profileImage = UIImage(resource: .testProfilePhoto)
     private let logoutButtonImage = UIImage(resource: .logOutButton)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupProfileViewUI()
+        view.backgroundColor = .ypBlack
+        if let profile = profileService.profile {
+            updateProfile(with: profile)
+        }
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main){[weak self] _ in
+                guard let self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+    }
+    
+    private func updateProfile(with profile: Profile){
+        nameLabel.text = profile.name
+        loginLabel.text = profile.username
+        descriptionLabel.text = (profile.bio?.isEmpty ?? true)
+        ? "Описание профиля отсутствует"
+        : profile.bio
+    }
+    
+    private func updateAvatar(){
+        guard
+            let profileImageUrl = ProfileImageService.shared.avatarImageUrl,
+            let url = URL(string: profileImageUrl)
+        else { return }
+        
+        let placeHolder = UIImage(systemName: "person.crop.circle.fill")?.withTintColor(.ypGrey,renderingMode: .alwaysOriginal).withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
+        
+        let processor = RoundCornerImageProcessor(cornerRadius: 35)
+        profileImageView.kf.indicatorType = .activity
+        profileImageView.kf.setImage(
+            with: url,
+            placeholder: placeHolder,
+            options: [
+                .processor(processor),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage,
+                .forceRefresh
+            ]){ result in
+                switch result{
+                case .success(let value):
+                    print(value.image)
+                    print(value.cacheType)
+                    print(value.source)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
     }
     
     private func setupProfileViewUI(){
@@ -33,7 +86,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureProfileImageView(){
-        profileImageView = UIImageView(image: profileImage)
+        profileImageView.image = profileImage
         profileImageView.layer.cornerRadius = 35
         profileImageView.clipsToBounds = true
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -48,13 +101,12 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureNameLabel(){
-        nameLabel = UILabel()
         nameLabel.text = ProfileViewConsatnts.nameLabelText
         nameLabel.font = UIFont.boldSystemFont(ofSize: 23)
         nameLabel.textColor = .white
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
-       
+        
         NSLayoutConstraint.activate([
             nameLabel.topAnchor.constraint(equalTo:profileImageView.bottomAnchor , constant: 8),
             nameLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor)
@@ -62,7 +114,6 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureLoginLable(){
-        loginLabel = UILabel()
         loginLabel.text = ProfileViewConsatnts.loginLabelText
         loginLabel.font = UIFont.systemFont(ofSize: 13)
         loginLabel.textColor = .ypGrey
@@ -72,11 +123,10 @@ final class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate([
             loginLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
             loginLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor)
-            ])
+        ])
     }
     
     private func configureDescriptionLabel(){
-        descriptionLabel = UILabel()
         descriptionLabel.text = ProfileViewConsatnts.discriptionLabelText
         descriptionLabel.font = UIFont.systemFont(ofSize: 13)
         descriptionLabel.textColor = .white
@@ -86,15 +136,12 @@ final class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate([
             descriptionLabel.topAnchor.constraint(equalTo: loginLabel.bottomAnchor, constant: 8),
             descriptionLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor)
-            ])
+        ])
     }
     
     private func configureLogoutButton(){
-        logoutButton = UIButton.systemButton(
-            with: logoutButtonImage,
-            target: self,
-            action: #selector(Self.loguotButtonTapped)
-        )
+        logoutButton.setImage(logoutButtonImage, for: .normal)
+        logoutButton.addTarget(self, action: #selector (loguotButtonTapped), for: .touchUpInside)
         logoutButton.tintColor = .ypRed
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logoutButton)
@@ -104,7 +151,7 @@ final class ProfileViewController: UIViewController {
             logoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: ProfileViewConsatnts.logoutButtonTrailingConstraints),
             logoutButton.widthAnchor.constraint(equalToConstant: ProfileViewConsatnts.logoutButtonWHconstraints),
             logoutButton.heightAnchor.constraint(equalToConstant: ProfileViewConsatnts.logoutButtonWHconstraints)
-            ])
+        ])
     }
     
     @objc private func loguotButtonTapped() {
