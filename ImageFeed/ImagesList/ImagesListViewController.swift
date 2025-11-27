@@ -91,7 +91,7 @@ final class ImagesListViewController: UIViewController {
                         self.tableView.performBatchUpdates(nil)
                     }
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    print("[configCell]: не удалось загрузить картинку \(error.localizedDescription)")
                 }
             }
         
@@ -161,7 +161,7 @@ extension ImagesListViewController: ImagesListCellDelegate{
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
         UIBlockingProgressHUD.show()
-        service.chageLike(photoId: photo.id, isLiked: photo.isLiked){[weak self] result in
+        service.changeLike(photoId: photo.id, isLiked: photo.isLiked){[weak self] result in
             guard let self else { return }
             switch result{
             case .success():
@@ -169,7 +169,7 @@ extension ImagesListViewController: ImagesListCellDelegate{
                 cell.setIsLiked(isLiked: self.photos[indexPath.row].isLiked)
                 UIBlockingProgressHUD.dismiss()
             case .failure(let error):
-                print("error \(error.localizedDescription)")
+                print("[changeLike]: не удалось установить/убрать лайк с фото \(error.localizedDescription)")
                 UIBlockingProgressHUD.dismiss()
             }
             

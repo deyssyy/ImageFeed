@@ -42,11 +42,10 @@ final class ImageListService {
     private var task: URLSessionTask?
     private let storage = OAuth2TokenStorage.shared
     static let didChangeNotification = Notification.Name("ImageListServiceDidChange")
-    private var dateFormatter = ISO8601DateFormatter()
+    private let dateFormatter = ISO8601DateFormatter()
     
     func deleteAllPhotos() {
         photos.removeAll()
-      //  NotificationCenter.default.post(name: ImageListService.didChangeNotification, object: self)
     }
     
     func fetchPhotosNextPage() {
@@ -106,7 +105,7 @@ final class ImageListService {
         return request
     }
     
-    func chageLike(photoId: String, isLiked: Bool,_ handler: @escaping (Result<Void, Error>) -> Void){
+    func changeLike(photoId: String, isLiked: Bool,_ handler: @escaping (Result<Void, Error>) -> Void){
         task?.cancel()
         
         guard let token = storage.bearerToken else {
@@ -139,7 +138,7 @@ final class ImageListService {
                     }
                     handler(.success(()))
                 case .failure(let error):
-                    print("error: \(error)")
+                    print("[changeLike]: не удалось установить/убрать лайк с фото \(error.localizedDescription)")
                     handler(.failure(error))
                 }
             }
