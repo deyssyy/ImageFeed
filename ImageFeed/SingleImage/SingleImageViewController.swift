@@ -1,27 +1,18 @@
 import UIKit
 
+
 final class SingleImageViewController: UIViewController{
-    var image: UIImage?{
-        didSet {
-            guard isViewLoaded, let image else { return }
-            imageView.image = image
-            imageView.frame.size = image.size
-            rescaleAndCenterImageInScrollView(image: image)
-        }
-    }
 
     private let imageView = UIImageView()
     private let scrollView = UIScrollView()
     private let backButton = UIButton(type: .custom)
     private let shareButton = UIButton(type: .custom)
+    var imageURLString: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupScrollView()
-        guard let image else { return }
-        imageView.image = image
-        imageView.frame.size = image.size
-        rescaleAndCenterImageInScrollView(image: image)
+        setImageFromURL()
     }
     
     private func setupScrollView(){
@@ -71,12 +62,46 @@ final class SingleImageViewController: UIViewController{
         ])
     }
     
+    private func setImageFromURL(){
+        guard let imageURLString = self.imageURLString else { return }
+        guard let url = URL(string: imageURLString) else { return }
+        UIBlockingProgressHUD.show()
+        imageView.kf.setImage(with: url) {[weak self] result in
+            guard let self else { return }
+            UIBlockingProgressHUD.dismiss()
+            
+            switch result {
+            case .success(let imageResult):
+                self.rescaleAndCenterImageInScrollView(image: imageResult.image)
+            case .failure:
+                self.showAlert()
+            }
+        }
+    }
+    
+    private func showAlert(){
+        let alert = UIAlertController(title: "Что-то пошло не так", message: "Попробовать еще раз?", preferredStyle: .alert)
+        let alertActionDismiss = UIAlertAction(title: "Не надо", style: .default){[weak self] _ in
+            guard let self else { return }
+            self.dismiss(animated: true)
+        }
+        let alertActionRetry = UIAlertAction(title: "Повторить", style: .default){[weak self] _ in
+            guard let self else { return }
+            alert.dismiss(animated: true){
+                self.setImageFromURL()
+            }
+        }
+        alert.addAction(alertActionRetry)
+        alert.addAction(alertActionDismiss)
+        present(alert, animated: true)
+    }
+    
     @objc private func didTapBackButton() {
         dismiss(animated: true, completion: nil)
     }
 
     @objc private func didTapShareButton(){
-        guard let image = image else { return }
+        guard let image = imageView.image else { return }
         let activityItems: [Any] = [image]
         let activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
         present(activityViewController, animated: true, completion: nil)

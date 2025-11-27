@@ -20,6 +20,10 @@ final class ProfileService{
     private var task: URLSessionTask?
     private(set) var profile: Profile?
     
+    func deleteProfile(){
+        self.profile = nil
+    }
+    
     private func MakeProfileRequest(token: String) -> URLRequest?{
         guard let url = URL(string: (Constants.defaultBaseURL.absoluteString + "/me")) else { return nil }
         var request = URLRequest(url: url)

@@ -1,4 +1,10 @@
 import UIKit
+import Kingfisher
+
+private enum ButtonIcons: String{
+    case LikeButtonOn
+    case LikeButtonOff
+}
 
 final class ImagesListCell: UITableViewCell{
     static let reusedIdentifier = "ImagesListCell"
@@ -10,9 +16,16 @@ final class ImagesListCell: UITableViewCell{
     let dateLabel = UILabel()
     let likeButton = UIButton(type: .custom)
     
+    weak var delegate: ImagesListCellDelegate?
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         gradientLayer.frame = bottomGradientView.bounds
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageCell.kf.cancelDownloadTask()
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -37,6 +50,8 @@ final class ImagesListCell: UITableViewCell{
         dateLabel.textColor = .white
         
         bottomGradientView.layer.opacity = 0.4
+        
+        likeButton.addTarget(self, action: #selector(likeButtonTaped), for: .touchUpInside)
         
         bottomGradientView.translatesAutoresizingMaskIntoConstraints = false
         imageCell.translatesAutoresizingMaskIntoConstraints = false
@@ -67,6 +82,22 @@ final class ImagesListCell: UITableViewCell{
         ])
     }
     
+    @objc private func likeButtonTaped(){
+        delegate?.imageListCellDidTapLike(self)
+    }
+    
+    func setIsLiked(isLiked: Bool){
+        DispatchQueue.main.async{[weak self] in
+            guard let self else { return }
+            self.likeButton.setImage(
+                        isLiked == true ?
+                        UIImage(named: ButtonIcons.LikeButtonOn.rawValue) :
+                        UIImage(named: ButtonIcons.LikeButtonOff.rawValue) ,
+                        for: .normal)
+        }
+        
+    }
+    
     private func makeGradient(){
         gradientLayer.colors = [
             UIColor.ypBlack.cgColor,
@@ -85,3 +116,5 @@ extension UIView{
         gradientLayer.frame = bounds
     }
 }
+
+

@@ -1,5 +1,9 @@
 import UIKit
 
+struct LikeResponse: Codable{
+    let photo: PhotoResult
+}
+
 struct PhotoResult: Codable{
     let id: String
     let createdAt: String
@@ -31,20 +35,30 @@ struct UrlsReusult: Codable{
 
 
 final class ImageListService {
-    static let share = ImageListService()
+    static let shared = ImageListService()
     private init(){}
     private(set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
     private var task: URLSessionTask?
+    private let storage = OAuth2TokenStorage.shared
     static let didChangeNotification = Notification.Name("ImageListServiceDidChange")
     private var dateFormatter = ISO8601DateFormatter()
     
-    func fetchPhotosNextPage(handler: @escaping(Result<[Photo], Error>) -> Void) {
+    func deleteAllPhotos() {
+        photos.removeAll()
+      //  NotificationCenter.default.post(name: ImageListService.didChangeNotification, object: self)
+    }
+    
+    func fetchPhotosNextPage() {
         task?.cancel()
         
         let nextPage = (lastLoadedPage ?? 0) + 1
-        guard let request = self.makeURLRequest(for: nextPage) else {
-            handler(.failure(NetworkError.invalidRequest))
+        
+        guard let token = storage.bearerToken else {
+            return
+        }
+        
+        guard let request = self.makeURLRequest(for: nextPage, token: token) else {
             print("[makeURLRequest]: невозможно создать URLRequest")
             return
         }
@@ -75,10 +89,8 @@ final class ImageListService {
                         name: ImageListService.didChangeNotification,
                         object: self,
                         userInfo: nil)
-                    handler(.success(self.photos))
                 case .failure(let error):
                     print("[fetchPhotosNextPage] : ошибка запроса \(error.localizedDescription) ")
-                    handler(.failure(error))
                 }
             }
         }
@@ -86,10 +98,54 @@ final class ImageListService {
         task.resume()
     }
     
-    private func makeURLRequest(for page: Int) -> URLRequest? {
+    private func makeURLRequest(for page: Int, token: String) -> URLRequest? {
         guard let url = URL(string: (Constants.defaultBaseURL.absoluteString + "/photos?page=\(page)")) else { return nil }
         var request = URLRequest(url: url)
         request.httpMethod = HTTPMethod.get.rawValue
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         return request
     }
+    
+    func chageLike(photoId: String, isLiked: Bool,_ handler: @escaping (Result<Void, Error>) -> Void){
+        task?.cancel()
+        
+        guard let token = storage.bearerToken else {
+            return
+        }
+        guard let url = URL(string: (Constants.defaultBaseURL.absoluteString + "/photos/\(photoId)/like")) else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = isLiked ? HTTPMethod.delete.rawValue : HTTPMethod.post.rawValue
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let task = URLSession.shared.objectTask(for: request){[weak self] (result: Result<LikeResponse,Error>) in
+            guard let self else { return }
+            defer{
+                self.task = nil
+            }
+            DispatchQueue.main.async{
+                switch result{
+                case .success(_):
+                    if let index = self.photos.firstIndex(where: {$0.id == photoId}){
+                        let photo = self.photos[index]
+                        let newPhoto = Photo(
+                            id: photo.id,
+                            size: photo.size,
+                            createdAt: photo.createdAt,
+                            welcomeDescription: photo.welcomeDescription,
+                            thumbImageURL: photo.thumbImageURL,
+                            largeImageURL: photo.largeImageURL,
+                            isLiked: !photo.isLiked)
+                        self.photos = self.photos.withReplaced(item: newPhoto, at: index)
+                    }
+                    handler(.success(()))
+                case .failure(let error):
+                    print("error: \(error)")
+                    handler(.failure(error))
+                }
+            }
+        }
+        self.task = task
+        task.resume()
+    }
 }
+

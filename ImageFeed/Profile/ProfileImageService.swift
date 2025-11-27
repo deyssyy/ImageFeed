@@ -22,6 +22,10 @@ final class ProfileImageService{
     private var task: URLSessionTask?
     private(set) var avatarImageUrl: String?
     
+    func deleteAvatarImageUrl(){
+        avatarImageUrl = nil
+    }
+    
     private func MakeProfilePhotoRequest(username: String, token: String) -> URLRequest?{
         guard let url = URL(string: (Constants.defaultBaseURL.absoluteString + "/users/\(username)")) else { return nil }
         var request = URLRequest(url: url)
