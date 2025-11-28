@@ -11,14 +11,13 @@ final class ProfileLogoutService{
         cleanProfileData()
         cleanImageList()
         cleanUserToken()
-        switchToSplashViewController()
     }
     
     private func cleanCookies(){
-    HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
-    WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()){records in
-        records.forEach{record in
-            WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record],completionHandler: {})
+        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()){records in
+            records.forEach{record in
+                WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record],completionHandler: {})
             }
         }
     }
@@ -41,16 +40,6 @@ final class ProfileLogoutService{
     private func cleanUserToken(){
         let storage = OAuth2TokenStorage.shared
         storage.delete()
-    }
-    
-    private func switchToSplashViewController(){
-        guard let window = UIApplication.shared.windows.first else {
-            print("Invalid window configuration")
-            return
-        }
-        
-        let splashViewController = SplashViewController()
-        window.rootViewController = splashViewController
     }
 }
 

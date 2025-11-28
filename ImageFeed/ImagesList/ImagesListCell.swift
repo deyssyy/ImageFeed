@@ -90,10 +90,10 @@ final class ImagesListCell: UITableViewCell{
         DispatchQueue.main.async{[weak self] in
             guard let self else { return }
             self.likeButton.setImage(
-                        isLiked == true ?
-                        UIImage(named: ButtonIcons.LikeButtonOn.rawValue) :
-                        UIImage(named: ButtonIcons.LikeButtonOff.rawValue) ,
-                        for: .normal)
+                isLiked == true
+                ? UIImage(named: ButtonIcons.LikeButtonOn.rawValue)
+                :UIImage(named: ButtonIcons.LikeButtonOff.rawValue),
+                for: .normal)
         }
         
     }

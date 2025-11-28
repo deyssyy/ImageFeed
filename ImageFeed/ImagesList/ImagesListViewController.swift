@@ -35,7 +35,7 @@ final class ImagesListViewController: UIViewController {
             }
         service.fetchPhotosNextPage()
     }
-
+    
     private func setupTableView(){
         tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reusedIdentifier)
         tableView.backgroundColor = .ypBlack
@@ -74,13 +74,11 @@ final class ImagesListViewController: UIViewController {
         
         let placeHolder = UIImage(resource: .stub)
         
-        let processor = RoundCornerImageProcessor(cornerRadius: 0)
         cell.imageCell.kf.indicatorType = .activity
         cell.imageCell.kf.setImage(
             with: url,
             placeholder: placeHolder,
             options: [
-                .processor(processor),
                 .scaleFactor(UIScreen.main.scale),
                 .cacheOriginalImage
             ]){[weak self] result in
@@ -100,13 +98,13 @@ final class ImagesListViewController: UIViewController {
         cell.likeButton.setImage(
             photos[indexPath.row].isLiked == true ?
             UIImage(named: ButtonIcons.LikeButtonOn.rawValue) :
-            UIImage(named: ButtonIcons.LikeButtonOff.rawValue) ,
+                UIImage(named: ButtonIcons.LikeButtonOff.rawValue) ,
             for: .normal)
         if let date = photos[indexPath.row].createdAt {
-                    cell.dateLabel.text = dateFormatter.string(from: date)
-               } else {
-                    cell.dateLabel.text = nil
-               }
+            cell.dateLabel.text = dateFormatter.string(from: date)
+        } else {
+            cell.dateLabel.text = nil
+        }
     }
 }
 
@@ -141,7 +139,7 @@ extension ImagesListViewController: UITableViewDelegate {
         let singleImageView = SingleImageViewController()
         
         singleImageView.imageURLString = photos[indexPath.row].largeImageURL
-
+        
         singleImageView.modalPresentationStyle = .fullScreen
         present(singleImageView, animated: true)
     }
@@ -163,14 +161,15 @@ extension ImagesListViewController: ImagesListCellDelegate{
         UIBlockingProgressHUD.show()
         service.changeLike(photoId: photo.id, isLiked: photo.isLiked){[weak self] result in
             guard let self else { return }
+            defer{
+                UIBlockingProgressHUD.dismiss()
+            }
             switch result{
             case .success():
                 self.photos = self.service.photos
                 cell.setIsLiked(isLiked: self.photos[indexPath.row].isLiked)
-                UIBlockingProgressHUD.dismiss()
             case .failure(let error):
                 print("[changeLike]: не удалось установить/убрать лайк с фото \(error.localizedDescription)")
-                UIBlockingProgressHUD.dismiss()
             }
             
         }

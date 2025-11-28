@@ -2,7 +2,7 @@ import UIKit
 
 
 final class SingleImageViewController: UIViewController{
-
+    
     private let imageView = UIImageView()
     private let scrollView = UIScrollView()
     private let backButton = UIButton(type: .custom)
@@ -17,7 +17,7 @@ final class SingleImageViewController: UIViewController{
     
     private func setupScrollView(){
         view.backgroundColor = .ypBlack
-       
+        
         imageView.contentMode = .scaleAspectFit
         
         backButton.setImage(UIImage(resource: .backwardButton), for: .normal)
@@ -99,7 +99,7 @@ final class SingleImageViewController: UIViewController{
     @objc private func didTapBackButton() {
         dismiss(animated: true, completion: nil)
     }
-
+    
     @objc private func didTapShareButton(){
         guard let image = imageView.image else { return }
         let activityItems: [Any] = [image]

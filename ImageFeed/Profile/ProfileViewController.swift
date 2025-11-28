@@ -16,7 +16,7 @@ final class ProfileViewController: UIViewController {
     private let loginLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let logoutButton = UIButton(type: .custom)
-
+    
     private var profileImageServiceObserver: NSObjectProtocol?
     private let profileService = ProfileService.shared
     private let profileLogoutService = ProfileLogoutService.shared
@@ -46,6 +46,16 @@ final class ProfileViewController: UIViewController {
         descriptionLabel.text = (profile.bio?.isEmpty ?? true)
         ? "Описание профиля отсутствует"
         : profile.bio
+    }
+    
+    private func switchToSplashViewController(){
+        guard let window = UIApplication.shared.windows.first else {
+            print("Invalid window configuration")
+            return
+        }
+        
+        let splashViewController = SplashViewController()
+        window.rootViewController = splashViewController
     }
     
     private func updateAvatar(){
@@ -161,6 +171,7 @@ final class ProfileViewController: UIViewController {
             guard let self else { return }
             alert.dismiss(animated: true)
             self.profileLogoutService.logout()
+            self.switchToSplashViewController()
         }
         let alertActionNo = UIAlertAction(title: "Нет", style: .default){_ in
             alert.dismiss(animated: true)
