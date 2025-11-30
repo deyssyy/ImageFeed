@@ -16,9 +16,10 @@ final class ProfileViewController: UIViewController {
     private let loginLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let logoutButton = UIButton(type: .custom)
-
+    
     private var profileImageServiceObserver: NSObjectProtocol?
     private let profileService = ProfileService.shared
+    private let profileLogoutService = ProfileLogoutService.shared
     private let profileImage = UIImage(resource: .testProfilePhoto)
     private let logoutButtonImage = UIImage(resource: .logOutButton)
     
@@ -45,6 +46,16 @@ final class ProfileViewController: UIViewController {
         descriptionLabel.text = (profile.bio?.isEmpty ?? true)
         ? "Описание профиля отсутствует"
         : profile.bio
+    }
+    
+    private func switchToSplashViewController(){
+        guard let window = UIApplication.shared.windows.first else {
+            print("Invalid window configuration")
+            return
+        }
+        
+        let splashViewController = SplashViewController()
+        window.rootViewController = splashViewController
     }
     
     private func updateAvatar(){
@@ -155,6 +166,18 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func loguotButtonTapped() {
-        //TO DO:
+        let alert = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
+        let alertActionYes = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            guard let self else { return }
+            alert.dismiss(animated: true)
+            self.profileLogoutService.logout()
+            self.switchToSplashViewController()
+        }
+        let alertActionNo = UIAlertAction(title: "Нет", style: .default){_ in
+            alert.dismiss(animated: true)
+        }
+        alert.addAction(alertActionYes)
+        alert.addAction(alertActionNo)
+        present(alert, animated: true)
     }
 }
