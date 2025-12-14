@@ -1,9 +1,21 @@
 import Foundation
 import WebKit
 
-final class ProfileLogoutService{
-    static let shared = ProfileLogoutService()
-    private init(){}
+public protocol ProfileLogoutServiceProtocol {
+    func logout()
+}
+
+final class ProfileLogoutService: ProfileLogoutServiceProtocol{
+    private let profileService: ProfileServiceProtocol
+    private let profileImageService: ProfileImageServiceProtocol
+    private let imageListService: ImageListServiceProtocol
+    static let didLogoutNotification = Notification.Name("LogoutServiceDidLogout")
+    
+    init(profileService: ProfileServiceProtocol, profileImageService: ProfileImageServiceProtocol, ImageListService: ImageListServiceProtocol, OAuth2TokenStorage: OAuth2TokenStorage = OAuth2TokenStorage.shared) {
+        self.profileService = profileService
+        self.profileImageService = profileImageService
+        self.imageListService = ImageListService
+    }
     
     func logout(){
         cleanCookies()
@@ -11,6 +23,11 @@ final class ProfileLogoutService{
         cleanProfileData()
         cleanImageList()
         cleanUserToken()
+        
+        NotificationCenter.default.post(
+            name: ProfileLogoutService.didLogoutNotification,
+            object: self,
+            userInfo: nil)
     }
     
     private func cleanCookies(){
@@ -23,17 +40,14 @@ final class ProfileLogoutService{
     }
     
     private func cleanAvatar(){
-        let profileImage = ProfileImageService.shared
-        profileImage.deleteAvatarImageUrl()
+        profileImageService.deleteAvatarImageUrl()
     }
     
     private func cleanProfileData(){
-        let profileService = ProfileService.shared
         profileService.deleteProfile()
     }
     
     private func cleanImageList(){
-        let imageListService = ImageListService.shared
         imageListService.deleteAllPhotos()
     }
     

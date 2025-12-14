@@ -14,9 +14,13 @@ struct ProfileResult: Codable{
     }
 }
 
-final class ProfileService{
-    static let shared = ProfileService()
-    private init(){}
+public protocol ProfileServiceProtocol{
+    var profile: Profile? { get }
+    func fetchProfile(_ token: String, handler: @escaping(Result<Profile, Error>) -> Void)
+    func deleteProfile()
+}
+
+final class ProfileService: ProfileServiceProtocol{
     private var task: URLSessionTask?
     private(set) var profile: Profile?
     

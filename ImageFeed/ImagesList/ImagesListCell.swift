@@ -51,6 +51,7 @@ final class ImagesListCell: UITableViewCell{
         
         bottomGradientView.layer.opacity = 0.4
         
+        likeButton.accessibilityIdentifier = "LikeButton"
         likeButton.addTarget(self, action: #selector(likeButtonTaped), for: .touchUpInside)
         
         bottomGradientView.translatesAutoresizingMaskIntoConstraints = false
@@ -95,7 +96,6 @@ final class ImagesListCell: UITableViewCell{
                 :UIImage(named: ButtonIcons.LikeButtonOff.rawValue),
                 for: .normal)
         }
-        
     }
     
     private func makeGradient(){

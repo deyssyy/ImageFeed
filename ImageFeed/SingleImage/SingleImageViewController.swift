@@ -20,6 +20,7 @@ final class SingleImageViewController: UIViewController{
         
         imageView.contentMode = .scaleAspectFit
         
+        backButton.accessibilityIdentifier = "ScrollViewBackButton"
         backButton.setImage(UIImage(resource: .backwardButton), for: .normal)
         backButton.addTarget(self, action: #selector (didTapBackButton), for: .touchUpInside)
         shareButton.setImage(UIImage(resource: .sharingButton), for: .normal)
