@@ -34,6 +34,7 @@ final class AuthViewController: UIViewController{
         loginButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
         loginButton.layer.masksToBounds = true
         loginButton.layer.cornerRadius = 16
+        loginButton.accessibilityIdentifier = "Authenticate"
         loginButton.addTarget(self, action: #selector (loginButtonTap), for: .touchUpInside)
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loginButton)
@@ -48,6 +49,10 @@ final class AuthViewController: UIViewController{
     
     @objc private func loginButtonTap(){
         let webViewController = WebViewViewController()
+        let authHelper = AuthHelper()
+        let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+        webViewController.presenter = webViewPresenter
+        webViewPresenter.view = webViewController
         webViewController.delegate = self
         navigationController?.pushViewController(webViewController, animated: true)
     }

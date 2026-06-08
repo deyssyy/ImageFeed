@@ -1,8 +1,13 @@
 import UIKit
 
-final class ImageListService {
-    static let shared = ImageListService()
-    private init(){}
+public protocol ImageListServiceProtocol{
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func deleteAllPhotos()
+    func changeLike(photoId: String, isLiked: Bool,_ handler: @escaping (Result<Void, Error>) -> Void)
+}
+
+final class ImageListService: ImageListServiceProtocol{
     private(set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
     private var task: URLSessionTask?

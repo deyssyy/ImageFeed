@@ -14,9 +14,13 @@ struct UserResult: Codable{
     }
 }
 
-final class ProfileImageService{
-    static let shared = ProfileImageService()
-    private init(){}
+public protocol ProfileImageServiceProtocol{
+    var avatarImageUrl: String? { get }
+    func fetchProfileImageUrl(username: String, handler: @escaping(Result<String, Error>) -> Void)
+    func deleteAvatarImageUrl()
+}
+
+final class ProfileImageService:ProfileImageServiceProtocol{
     static let didChangeNotification = Notification.Name("ProfileImageProviderDidChange")
     private let storage = OAuth2TokenStorage.shared
     private var task: URLSessionTask?

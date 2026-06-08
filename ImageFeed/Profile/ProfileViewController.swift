@@ -1,7 +1,12 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+public protocol ProfileViewControllerProtocol: AnyObject {
+    func displayProfileData(name: String, login: String, description: String)
+    func displayProfileImage(url: URL, placeHolder: UIImage)
+}
+
+final class ProfileViewController: UIViewController & ProfileViewControllerProtocol {
     
     enum ProfileViewConsatnts{
         static let logoutButtonWHconstraints: CGFloat = 44
@@ -11,6 +16,8 @@ final class ProfileViewController: UIViewController {
         static var discriptionLabelText = "Hello, world!"
     }
     
+    var presenter: ProfileViewPresenterProtocol?
+    
     private let profileImageView = UIImageView()
     private let nameLabel = UILabel()
     private let loginLabel = UILabel()
@@ -18,8 +25,6 @@ final class ProfileViewController: UIViewController {
     private let logoutButton = UIButton(type: .custom)
     
     private var profileImageServiceObserver: NSObjectProtocol?
-    private let profileService = ProfileService.shared
-    private let profileLogoutService = ProfileLogoutService.shared
     private let profileImage = UIImage(resource: .testProfilePhoto)
     private let logoutButtonImage = UIImage(resource: .logOutButton)
     
@@ -27,45 +32,23 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         setupProfileViewUI()
         view.backgroundColor = .ypBlack
-        if let profile = profileService.profile {
-            updateProfile(with: profile)
-        }
+        presenter?.viewDidLoad()
         profileImageServiceObserver = NotificationCenter.default.addObserver(
             forName: ProfileImageService.didChangeNotification,
             object: nil,
             queue: .main){[weak self] _ in
                 guard let self else { return }
-                self.updateAvatar()
+                self.presenter?.updateAvatar()
             }
-        updateAvatar()
     }
     
-    private func updateProfile(with profile: Profile){
-        nameLabel.text = profile.name
-        loginLabel.text = profile.username
-        descriptionLabel.text = (profile.bio?.isEmpty ?? true)
-        ? "Описание профиля отсутствует"
-        : profile.bio
+    func displayProfileData(name: String, login: String, description: String) {
+        nameLabel.text = name
+        loginLabel.text = login
+        descriptionLabel.text = description
     }
     
-    private func switchToSplashViewController(){
-        guard let window = UIApplication.shared.windows.first else {
-            print("Invalid window configuration")
-            return
-        }
-        
-        let splashViewController = SplashViewController()
-        window.rootViewController = splashViewController
-    }
-    
-    private func updateAvatar(){
-        guard
-            let profileImageUrl = ProfileImageService.shared.avatarImageUrl,
-            let url = URL(string: profileImageUrl)
-        else { return }
-        
-        let placeHolder = UIImage(systemName: "person.crop.circle.fill")?.withTintColor(.ypGrey,renderingMode: .alwaysOriginal).withConfiguration(UIImage.SymbolConfiguration(pointSize: 70, weight: .regular, scale: .large))
-        
+    func displayProfileImage(url: URL, placeHolder: UIImage) {
         let processor = RoundCornerImageProcessor(cornerRadius: 35)
         profileImageView.kf.indicatorType = .activity
         profileImageView.kf.setImage(
@@ -151,6 +134,7 @@ final class ProfileViewController: UIViewController {
     }
     
     private func configureLogoutButton(){
+        logoutButton.accessibilityIdentifier = "LogoutButton"
         logoutButton.setImage(logoutButtonImage, for: .normal)
         logoutButton.addTarget(self, action: #selector (loguotButtonTapped), for: .touchUpInside)
         logoutButton.tintColor = .ypRed
@@ -166,18 +150,7 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func loguotButtonTapped() {
-        let alert = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
-        let alertActionYes = UIAlertAction(title: "Да", style: .default) { [weak self] _ in
-            guard let self else { return }
-            alert.dismiss(animated: true)
-            self.profileLogoutService.logout()
-            self.switchToSplashViewController()
-        }
-        let alertActionNo = UIAlertAction(title: "Нет", style: .default){_ in
-            alert.dismiss(animated: true)
-        }
-        alert.addAction(alertActionYes)
-        alert.addAction(alertActionNo)
+        guard let alert = presenter?.aproveLogout() else { return }
         present(alert, animated: true)
     }
 }
